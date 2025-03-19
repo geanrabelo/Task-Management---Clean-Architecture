@@ -26,5 +26,8 @@ public class TaskMapper {
     public TaskEntity toTaskEntity(CreateRequest createRequest){
         return new TaskEntity(createRequest.tittle(), createRequest.description(), createRequest.status());
     }
+    public Task toTask(CreateRequest createRequest){
+        return new Task(createRequest.tittle(), createRequest.description(), createRequest.status());
+    }
 
 }

@@ -6,7 +6,7 @@ import com.br.task.infrastructure.dto.ResponseDTO;
 import com.br.task.infrastructure.entity.TaskEntity;
 import com.br.task.infrastructure.mapper.TaskMapper;
 import com.br.task.infrastructure.repositories.TaskEntityRepository;
-import com.br.task.infrastructure.service.TaskService;
+import com.br.task.infrastructure.service.CreateTaskGatewayImpl;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,12 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskService taskService;
+    private final CreateTaskGatewayImpl createTaskGateway;
     private final TaskEntityRepository taskEntityRepository;
     private final TaskMapper taskMapper;
 
-    public TaskController(TaskService taskService, TaskEntityRepository taskEntityRepository, TaskMapper taskMapper){
-        this.taskService = taskService;
+    public TaskController(CreateTaskGatewayImpl createTaskGateway, TaskEntityRepository taskEntityRepository, TaskMapper taskMapper){
+        this.createTaskGateway = createTaskGateway;
         this.taskEntityRepository = taskEntityRepository;
         this.taskMapper = taskMapper;
     }
@@ -33,11 +33,9 @@ public class TaskController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> create(@RequestBody @Valid CreateRequest createRequest, UriComponentsBuilder uriComponentsBuilder) throws TaskAlreayExist {
-        taskService.create(taskMapper.toTask(new TaskEntity(createRequest.tittle(), createRequest.description(), createRequest.status())));
-        var taskEntity = taskMapper.toTaskEntity(createRequest);
-        taskEntityRepository.save(taskEntity);
-        var uri = uriComponentsBuilder.path("/tasks").buildAndExpand(taskEntity).toUri();
+        var task = taskMapper.toTask(createRequest);
+        createTaskGateway.create(task);
+        var uri = uriComponentsBuilder.path("/tasks").buildAndExpand(task).toUri();
         return ResponseEntity.created(uri).body(new ResponseDTO("Task created sucessful"));
     }
-
 }

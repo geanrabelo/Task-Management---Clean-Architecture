@@ -22,10 +22,6 @@ public class CreateTaskUseCaseImpl implements CreateTaskUseCase {
 
     @Override
     public void create(Task task) throws TaskAlreayExist {
-        if(taskRepository.existsTaskById(task.getId())){
-            throw new TaskAlreayExist(EnumCode.TAS0001.getMessage(), EnumCode.TAS0001.getCode());
-        }else{
-            createTaskGateway.create(task);
-        }
+        createTaskGateway.create(task);
     }
 }
